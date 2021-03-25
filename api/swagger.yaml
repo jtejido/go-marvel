@@ -1,0 +1,283 @@
+openapi: 3.0.0
+info:
+  title: Marvel API Client
+  description: This is a simple Client for fetching Marvel Characters.
+  version: 1.0.2-oas3
+servers:
+- url: /
+tags:
+- name: public
+paths:
+  /characters:
+    get:
+      tags:
+      - public
+      summary: Fetches lists of characters.
+      description: Fetches lists of comic characters with optional filters. See notes
+        on individual parameters below.
+      parameters:
+      - name: limit
+        in: query
+        description: Limit the result set to the specified number of resources.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: Skip the specified number of resources in the result set.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: No response was specified
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharacterDataWrapper'
+  /characters/{characterId}:
+    get:
+      tags:
+      - public
+      summary: Fetches a single character by id.
+      description: This method fetches a single character resource.  It is the canonical
+        URI for any character resource provided by the API.
+      parameters:
+      - name: characterId
+        in: path
+        description: A single character id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: No response was specified
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CharacterDataWrapper'
+components:
+  schemas:
+    ComicList:
+      properties:
+        available:
+          type: integer
+          description: The number of total available issues in this list. Will always
+            be greater than or equal to the "returned" value.
+          format: int32
+        returned:
+          type: integer
+          description: The number of issues returned in this collection (up to 20).
+          format: int32
+        collectionURI:
+          type: string
+          description: The path to the full list of issues in this collection.
+        items:
+          type: array
+          description: The list of returned issues in this collection.
+          items:
+            $ref: '#/components/schemas/ComicSummary'
+    EventList:
+      properties:
+        available:
+          type: integer
+          description: The number of total available events in this list. Will always
+            be greater than or equal to the "returned" value.
+          format: int32
+        returned:
+          type: integer
+          description: The number of events returned in this collection (up to 20).
+          format: int32
+        collectionURI:
+          type: string
+          description: The path to the full list of events in this collection.
+        items:
+          type: array
+          description: The list of returned events in this collection.
+          items:
+            $ref: '#/components/schemas/EventSummary'
+    SeriesList:
+      properties:
+        available:
+          type: integer
+          description: The number of total available series in this list. Will always
+            be greater than or equal to the "returned" value.
+          format: int32
+        returned:
+          type: integer
+          description: The number of series returned in this collection (up to 20).
+          format: int32
+        collectionURI:
+          type: string
+          description: The path to the full list of series in this collection.
+        items:
+          type: array
+          description: The list of returned series in this collection.
+          items:
+            $ref: '#/components/schemas/SeriesSummary'
+    StoryList:
+      properties:
+        available:
+          type: integer
+          description: The number of total available stories in this list. Will always
+            be greater than or equal to the "returned" value.
+          format: int32
+        returned:
+          type: integer
+          description: The number of stories returned in this collection (up to 20).
+          format: int32
+        collectionURI:
+          type: string
+          description: The path to the full list of stories in this collection.
+        items:
+          type: array
+          description: The list of returned stories in this collection.
+          items:
+            $ref: '#/components/schemas/StorySummary'
+    EventSummary:
+      properties:
+        resourceURI:
+          type: string
+          description: The path to the individual event resource.
+        name:
+          type: string
+          description: The name of the event.
+    SeriesSummary:
+      properties:
+        resourceURI:
+          type: string
+          description: The path to the individual series resource.
+        name:
+          type: string
+          description: The canonical name of the series.
+    ComicSummary:
+      properties:
+        resourceURI:
+          type: string
+          description: The path to the individual comic resource.
+        name:
+          type: string
+          description: The canonical name of the comic.
+    Url:
+      properties:
+        type:
+          type: string
+          description: A text identifier for the URL.
+        url:
+          type: string
+          description: A full URL (including scheme, domain, and path).
+    StorySummary:
+      properties:
+        resourceURI:
+          type: string
+          description: The path to the individual story resource.
+        name:
+          type: string
+          description: The canonical name of the story.
+        type:
+          type: string
+          description: The type of the story (interior or cover).
+    Image:
+      properties:
+        path:
+          type: string
+          description: The directory path of to the image.
+        extension:
+          type: string
+          description: The file extension for the image.
+    CharacterDataContainer:
+      properties:
+        offset:
+          type: integer
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+        limit:
+          type: integer
+          description: The requested result limit.
+          format: int32
+        total:
+          type: integer
+          description: The total number of resources available given the current filter
+            set.
+          format: int32
+        count:
+          type: integer
+          description: The total number of results returned by this call.
+          format: int32
+        results:
+          type: array
+          description: The list of characters returned by the call.
+          items:
+            $ref: '#/components/schemas/Character'
+    Character:
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the character resource.
+          format: int32
+        name:
+          type: string
+          description: The name of the character.
+        description:
+          type: string
+          description: A short bio or description of the character.
+        modified:
+          type: string
+          description: The date the resource was most recently modified.
+          format: date
+        resourceURI:
+          type: string
+          description: The canonical URL identifier for this resource.
+        urls:
+          type: array
+          description: A set of public web site URLs for the resource.
+          items:
+            $ref: '#/components/schemas/Url'
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+        comics:
+          $ref: '#/components/schemas/ComicList'
+        stories:
+          $ref: '#/components/schemas/StoryList'
+        events:
+          $ref: '#/components/schemas/EventList'
+        series:
+          $ref: '#/components/schemas/SeriesList'
+    CharacterDataWrapper:
+      properties:
+        code:
+          type: integer
+          description: The HTTP status code of the returned result.
+          format: int32
+        status:
+          type: string
+          description: A string description of the call status.
+        copyright:
+          type: string
+          description: The copyright notice for the returned result.
+        attributionText:
+          type: string
+          description: The attribution notice for this result.  Please display either
+            this notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+        attributionHTML:
+          type: string
+          description: An HTML representation of the attribution notice for this result.  Please
+            display either this notice or the contents of the attributionText field
+            on all screens which contain data from the Marvel Comics API.
+        data:
+          $ref: '#/components/schemas/CharacterDataContainer'
+        etag:
+          type: string
+          description: A digest value of the content returned by the call.
