@@ -24,27 +24,9 @@ debug: true
 
 When running the binary without **-config** flag, it will attempt to lookup from **MARVEL_API_CONFIG** environment, otherwise an error.
 
-## Fetch Characters
+## Usage
 
-### Character IDs
-Once the api is running, you can start fetching character IDs (default limit is 20):
-
-```
-$ curl localhost:8080/characters
-```
-
-It also supports limit and offset optional parameters:
-
-```
-$ curl "localhost:8080/characters?limit=10&offset=10"
-```
-
-### Character By ID
-You can also fetch basic character info by ID:
-
-```
-$ curl localhost:8080/characters/1009146
-```
+See this wiki for fetching Character/s and Comic/s requests.
 
 ### Caching
 This [General Info](https://developer.marvel.com/documentation/generalinfo) page pretty much details how one should use **ETag** for request optimization.
