@@ -12,7 +12,9 @@ import (
 	"strconv"
 )
 
-var etagCache *cache.Cache = cache.New()
+var (
+	Cache *cache.Cache = cache.New()
+)
 
 func charactersHandler(conf *config.Config) func(c *gin.Context) {
 	return func(c *gin.Context) {
@@ -23,19 +25,13 @@ func charactersHandler(conf *config.Config) func(c *gin.Context) {
 			etagStr = etag.(string)
 		}
 
-		res, err := marvelService.All(etagStr, c.Query("limit"), c.Query("offset"))
+		res, err := marvelService.Characters(etagStr, c.Query("limit"), c.Query("offset"))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, core.NewErrorResponseWithCode(err.Error(), 500))
 			return
 		}
 
-		if etagStr != "" {
-			if res.Etag != etagStr {
-				etagCache.Set(c.Request.RequestURI, etagStr)
-			}
-		}
-
-		c.JSON(http.StatusOK, res.Result)
+		c.JSON(http.StatusOK, res)
 	}
 }
 
@@ -57,23 +53,17 @@ func characterHandler(conf *config.Config) func(c *gin.Context) {
 			etagStr = etag.(string)
 		}
 
-		res, err := marvelService.ByID(etagStr, id)
+		res, err := marvelService.CharacterByID(etagStr, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, core.NewErrorResponseWithCode(err.Error(), 500))
 			return
 		}
 
-		if etagStr != "" {
-			if res.Etag != etagStr {
-				etagCache.Set(c.Request.RequestURI, etagStr)
-			}
-		}
-
-		c.JSON(http.StatusOK, res.Result)
+		c.JSON(http.StatusOK, res)
 	}
 }
 
 func Setup(ctx context.Context, conf *config.Config, g *gin.RouterGroup) {
-	g.GET("", middleware.ETagCacheCheck(etagCache), charactersHandler(conf))
-	g.GET("/:id", middleware.ETagCacheCheck(etagCache), characterHandler(conf))
+	g.GET("", middleware.ETagCacheCheck(Cache), middleware.BodyCacheCheck(Cache), charactersHandler(conf))
+	g.GET("/:id", middleware.ETagCacheCheck(Cache), middleware.BodyCacheCheck(Cache), characterHandler(conf))
 }

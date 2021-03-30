@@ -10,6 +10,7 @@ import (
 	"github.com/jtejido/go-marvel/config"
 	"github.com/jtejido/go-marvel/core"
 	"github.com/jtejido/go-marvel/routes/characters"
+	"github.com/jtejido/go-marvel/routes/comics"
 	"log"
 	"net/http"
 	"os"
@@ -44,6 +45,7 @@ func routes(conf *config.Config, router *gin.Engine, close func()) {
 	ctx, cancel := context.WithCancel(context.WithValue(context.TODO(), "wg", wg))
 
 	characters.Setup(ctx, conf, router.Group("/characters", core.CORS))
+	comics.Setup(ctx, conf, router.Group("/comics", core.CORS))
 
 	<-signals
 
