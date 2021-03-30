@@ -26,7 +26,7 @@ When running the binary without **-config** flag, it will attempt to lookup from
 
 ## Usage
 
-See this [doc](https://github.com/jtejido/go-marvel/tree/master/api/docs/index.html) for fetching Character/s and Comic/s requests.
+See this [doc](https://github.com/jtejido/go-marvel/tree/master/api/docs) for fetching Character/s and Comic/s requests.
 
 ### Caching
 This [General Info](https://developer.marvel.com/documentation/generalinfo) page pretty much details how one should use **ETag** for request optimization.
